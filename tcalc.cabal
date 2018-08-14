@@ -1,0 +1,23 @@
+name:                tcalc
+version:             0.1.0.0
+synopsis:            CLI for performing time-based calculations.
+-- description:
+homepage:            https://github.com/rdnetto/tcalc#readme
+license:             Apache
+license-file:        LICENSE
+author:              Reuben D'Netto
+maintainer:          rdnetto@gmail.com
+copyright:           Copyright 2018
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable tcalc
+  hs-source-dirs:      src
+  main-is:             Main.hs
+  other-modules:       Parser
+  default-language:    Haskell2010
+  ghc-options:         -O2 -Wall -Wno-orphans -Wmissing-import-lists -Widentities -Wredundant-constraints
+  build-depends:       base >= 4.7 && < 5,
+                       basic-prelude,
+                       megaparsec
