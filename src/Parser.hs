@@ -44,7 +44,8 @@ data Literal
     deriving (Eq, Show)
 
 -- This is stored as the number of seconds.
-newtype Duration = Float
+newtype Duration = Duration Float
+    deriving (Eq, Show)
 
 exprParser :: Parser expr
 exprParser = undefined
