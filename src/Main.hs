@@ -6,7 +6,7 @@ import qualified Prelude as P
 import Text.Megaparsec (runParser)
 import Text.Megaparsec.Error (parseErrorPretty)
 
-import Parser
+import Parser.Expression
 
 
 main :: IO ()
