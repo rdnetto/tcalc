@@ -1,6 +1,6 @@
 {-# LANGUAGE StrictData #-}
 
-module Parser.Expression(exprParser) where
+module Parser.Expression(Expr(..), exprParser) where
 
 import BasicPrelude
 import Text.Megaparsec.Expr (makeExprParser, Operator(..))

@@ -15,7 +15,8 @@ cabal-version:       >=1.10
 executable tcalc
   hs-source-dirs:      src
   main-is:             Main.hs
-  other-modules:       Parser.Common,
+  other-modules:       Interpreter
+                       Parser.Common,
                        Parser.Expression,
                        Parser.Literals
   default-language:    Haskell2010

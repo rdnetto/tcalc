@@ -6,7 +6,9 @@ import qualified Prelude as P
 import Text.Megaparsec (runParser)
 import Text.Megaparsec.Error (parseErrorPretty)
 
+import Interpreter
 import Parser.Expression
+import Parser.Literals
 
 
 main :: IO ()
@@ -21,5 +23,5 @@ evalLine txt = do
          Right ast -> evalAST ast
          Left  err -> P.putStrLn $ parseErrorPretty err
 
--- TODO: execute progream
-evalAST = undefined
+evalAST :: Expr -> IO ()
+evalAST = putStrLn . renderLiteral . evaluateExpr
