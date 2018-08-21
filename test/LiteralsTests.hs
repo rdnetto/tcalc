@@ -13,10 +13,12 @@ literalsTests = testGroup "LiteralsTests" [
             testDurationRendering 93784 "1d2h3m4s",
             testDurationRendering 1.5   "1.5s",
             testDurationRendering 1     "1s",
-            testDurationRendering 0.5   "0.5s"
+            testDurationRendering 0.5   "0.5s",
+            testDurationRendering 0     "0s"
         ]
     ]
 
 testDurationRendering :: Double -> Text -> TestTree
-testDurationRendering secs str = testCase "testDurationRendering" $ assertEqual "" d str where
-    d = renderLiteral (LitDuration $ Duration secs)
+testDurationRendering secs str = testCase (textToString name) (assertEqual "" str actual) where
+    name = "testDurationRendering " ++ str
+    actual = renderLiteral (LitDuration $ Duration secs)

@@ -5,6 +5,7 @@ module Parser.Literals (Literal(..), Duration(..), literalParser, renderLiteral)
 
 import BasicPrelude
 import Control.Applicative (some)
+import Data.Text (singleton)
 import Prelude (Semigroup)
 import Text.Megaparsec.Char (oneOf)
 import qualified Text.Megaparsec.Char.Lexer as L
@@ -83,10 +84,21 @@ renderLiteral (LitScalar s) = tshow s
 renderLiteral (LitDuration (Duration totalSecs)) = f (reverse absoluteUnits) totalSecs "" where
     f :: [(Char, Int)] -> Double -> Text -> Text
     f [] _ _ = error "This should never happen"
-    f [_] s x = x ++ tshow s ++ "s"      -- When we have only seconds left, just write out the value directly
-    f ((unit, multiplier):us) s0 res = f us (s0 - n*m) (res ++ tshow n ++ tshow unit) where
-        m = fromIntegral multiplier
-        n = fromIntegral @ Int
-          . floor
-          $ (s0 / m)
+    -- When there's just seconds left, render the entire thing (omitting decimal place if not relevant)
+    f [_] s x = x ++ s' ++ "s" where
+        sInt :: Int
+            = floor s
+        s' = if s == fromIntegral sInt
+                then tshow sInt
+                else tshow s
 
+    f ((unit, multiplier):us) s0 res = f us s' res' where
+        m = fromIntegral multiplier
+        n :: Int
+          = floor $ (s0 / m)
+
+        -- Update accumulators
+        s' = s0 - (fromIntegral n) * m
+        res' = case n of
+                    0 -> res
+                    _ -> res ++ tshow n ++ singleton unit
