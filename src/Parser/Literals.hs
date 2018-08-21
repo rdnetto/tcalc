@@ -84,6 +84,8 @@ renderLiteral (LitScalar s) = tshow s
 renderLiteral (LitDuration (Duration totalSecs)) = f (reverse absoluteUnits) totalSecs "" where
     f :: [(Char, Int)] -> Double -> Text -> Text
     f [] _ _ = error "This should never happen"
+    -- If negative, need to handle sign upfront to ensure floor does the right thing
+    f us s "" | s < 0 = f us (-s) ("-")
     -- When there's just seconds left, render the entire thing (omitting decimal place if not relevant)
     f [_] s x = x ++ s' ++ "s" where
         sInt :: Int

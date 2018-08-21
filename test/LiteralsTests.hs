@@ -14,7 +14,8 @@ literalsTests = testGroup "LiteralsTests" [
             testDurationRendering 1.5   "1.5s",
             testDurationRendering 1     "1s",
             testDurationRendering 0.5   "0.5s",
-            testDurationRendering 0     "0s"
+            testDurationRendering 0     "0s",
+            testDurationRendering (-70) "-1m10s"
         ]
     ]
 
