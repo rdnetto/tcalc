@@ -1,4 +1,5 @@
 {-# LANGUAGE StrictData #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Parser.Literals (Literal(..), Duration(..), literalParser, renderLiteral) where
 
@@ -81,8 +82,11 @@ renderLiteral :: Literal -> Text
 renderLiteral (LitScalar s) = tshow s
 renderLiteral (LitDuration (Duration totalSecs)) = f (reverse absoluteUnits) totalSecs "" where
     f :: [(Char, Int)] -> Double -> Text -> Text
+    f [] _ _ = error "This should never happen"
     f [_] s x = x ++ tshow s ++ "s"      -- When we have only seconds left, just write out the value directly
     f ((unit, multiplier):us) s0 res = f us (s0 - n*m) (res ++ tshow n ++ tshow unit) where
         m = fromIntegral multiplier
-        n = fromIntegral $ floor (s0 / m)
+        n = fromIntegral @ Int
+          . floor
+          $ (s0 / m)
 
