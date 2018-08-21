@@ -1,6 +1,6 @@
 {-# LANGUAGE StrictData #-}
 
-module Parser.Expression(Expr(..), exprParser) where
+module Parser.Expression(Expr(..), BinaryOperator(..), exprParser, boSymbol) where
 
 import BasicPrelude
 import Text.Megaparsec.Expr (makeExprParser, Operator(..))
@@ -34,6 +34,12 @@ data BinaryOperator
     | BOMultiply
     | BODivide
     deriving (Eq, Show)
+
+boSymbol :: BinaryOperator -> Char
+boSymbol BOAdd      = '+'
+boSymbol BOMinus    = '-'
+boSymbol BOMultiply = '*'
+boSymbol BODivide   = '/'
 
 exprParser :: Parser Expr
 exprParser = makeExprParser term ops where

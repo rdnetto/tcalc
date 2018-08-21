@@ -24,4 +24,7 @@ evalLine txt = do
          Left  err -> P.putStrLn $ parseErrorPretty err
 
 evalAST :: Expr -> IO ()
-evalAST = putStrLn . renderLiteral . evaluateExpr
+evalAST expr = res where
+    res = case evaluateExpr expr of
+               Right e  -> putStrLn $ renderLiteral e
+               Left msg -> putStrLn msg

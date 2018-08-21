@@ -1,7 +1,7 @@
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE TypeApplications #-}
 
-module Parser.Literals (Literal(..), Duration(..), literalParser, renderLiteral) where
+module Parser.Literals (Literal(..), Duration(..), literalParser, renderLiteral, isScalar, isDuration) where
 
 import BasicPrelude
 import Control.Applicative (some)
@@ -24,6 +24,13 @@ data Literal
 newtype Duration = Duration Double
     deriving (Eq, Show)
 
+isScalar :: Literal -> Bool
+isScalar (LitScalar _) = True
+isScalar _ = False
+
+isDuration :: Literal -> Bool
+isDuration (LitDuration _) = True
+isDuration _ = False
 
 -- Multiplication is non-sensical for durations, so the monoid instance is unambiguously addition
 instance Semigroup Duration where
