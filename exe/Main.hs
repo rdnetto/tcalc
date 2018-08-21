@@ -1,8 +1,8 @@
 module Main where
 
 import BasicPrelude hiding (getContents)
-import Data.Text.IO (getContents)
 import qualified Prelude as P
+import System.IO.Error (ioError, catchIOError, isEOFError)
 import Text.Megaparsec (runParser)
 import Text.Megaparsec.Error (parseErrorPretty)
 
@@ -12,9 +12,16 @@ import Parser.Literals
 
 
 main :: IO ()
-main = do
-    txt <- getContents
-    mapM_ evalLine $ lines txt
+main = ignoreEOF . forever $ do
+    putStr "> "
+    evalLine =<< getLine
+
+-- Ignore an EOFError and continue executing.
+-- This allows us to treat the exception as a break from the loop.
+ignoreEOF :: IO () -> IO ()
+ignoreEOF f = catchIOError f handler where
+    handler e | isEOFError e = pure ()
+              | otherwise    = ioError e
 
 evalLine :: Text -> IO ()
 evalLine txt = do
