@@ -4,6 +4,7 @@ import BasicPrelude
 import Test.Tasty
 import Test.Tasty.HUnit
 import Text.Megaparsec (runParser)
+import Text.Megaparsec.Error (parseErrorPretty)
 
 import Parser.Literals
 
@@ -41,5 +42,5 @@ testLiteralParser str expected = testCase name res where
     name = "testLiteralParser " ++ textToString str
     res = case runParser literalParser "<stdin>" str of
              Right ast -> assertEqual "" expected ast
-             Left  err -> assertFailure $ show err
+             Left  err -> assertFailure $ parseErrorPretty err
 
