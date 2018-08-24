@@ -15,7 +15,7 @@ type Parser = Parsec Void Text
 spaceConsumer :: Parser ()
 spaceConsumer = L.space space1 lineComment blockComment where
     lineComment = L.skipLineComment "#"
-    blockComment = mempty    -- not supported
+    blockComment = fail "blockComment not supported"
 
 -- A lexeme is a lexical unit; a token. This combinator handles any whitespace or comments that follow it
 lexeme :: Parser a -> Parser a
