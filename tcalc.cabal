@@ -47,10 +47,11 @@ test-suite tcalc_test
   hs-source-dirs:      test
   build-depends:       base,
                        basic-prelude,
+                       megaparsec,
                        tcalc,
                        tasty,
                        tasty-hunit
-  ghc-options:         -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints
+  ghc-options:         -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints -rtsopts
   default-language:    Haskell2010
   default-extensions:  NoImplicitPrelude,
                        OverloadedStrings,
