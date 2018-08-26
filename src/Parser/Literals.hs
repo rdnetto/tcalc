@@ -7,10 +7,9 @@ import BasicPrelude
 import Control.Applicative (some)
 import Data.Text (singleton)
 import Prelude (Semigroup)
+import Text.Megaparsec (try)
 import Text.Megaparsec.Char (oneOf)
 import qualified Text.Megaparsec.Char.Lexer as L
-
-
 
 import Parser.Common
 
@@ -38,6 +37,17 @@ instance Semigroup Duration where
 
 instance Monoid Duration where
     mempty = Duration 0
+
+-- Not technically valid because we don't implement (*), but that's what megaparsec's
+-- signed combinator is implemented in terms of, so...
+instance Num Duration where
+    (Duration a) + (Duration b) = Duration (a + b)
+    (Duration a) - (Duration b) = Duration (a - b)
+    (Duration _) * (Duration _) = error "Multiplication is not valid for Durations"
+    negate (Duration d) = Duration (negate d)
+    abs (Duration d) = Duration (abs d)
+    signum (Duration d) = Duration (signum d)
+    fromInteger = Duration . fromInteger
 
 
 {-
@@ -67,22 +77,32 @@ absoluteUnits = zip units
                     (scanl1 (*) (map snd relativeUnits))
 
 
-literalParser :: Parser Literal
-literalParser = lexeme (scalarP <|> durationP) where
-    scalarP = LitScalar <$> L.float
+-- Parser accepting an unsigned number expressed as a float or integer
+scalar :: Parser Double
+scalar = try L.float
+      <|> map fromIntegral (L.decimal :: Parser Int)
 
-    -- Parses a single [SCALAR][SUFFIX] segment
-    durationToken :: Parser Duration
-    durationToken = do
-        val <- L.float
-        unit <- oneOf units
-        -- This is safe, because the previous line guarrantees our unit is a key in the assoc list
-        let Just mul = lookup unit absoluteUnits
-        return $ Duration (val * fromIntegral mul)
+-- Parser accepting a signed number expressed as a float or integer
+signedScalar :: Parser Double
+signedScalar = L.signed spaceConsumer scalar
+
+literalParser :: Parser Literal
+literalParser = try (lexeme durationP) <|> lexeme scalarP where
+    scalarP = LitScalar <$> signedScalar
 
     durationP = map LitDuration
+              . L.signed spaceConsumer
               . map concat
               $ some durationToken
+
+-- Parses a single [SCALAR][SUFFIX] segment
+durationToken :: Parser Duration
+durationToken = do
+    val <- scalar
+    unit <- oneOf units
+    -- This is safe, because the previous line guarrantees our unit is a key in the assoc list
+    let Just mul = lookup unit absoluteUnits
+    return $ Duration (val * fromIntegral mul)
 
 
 -- A textual representation which matches the parse format

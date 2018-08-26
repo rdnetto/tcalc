@@ -1,6 +1,6 @@
 {-# LANGUAGE StrictData #-}
 
-module Parser.Common(Parser, lexeme, symbol, parens) where
+module Parser.Common(Parser, lexeme, symbol, parens, spaceConsumer) where
 
 import BasicPrelude
 import Data.Void (Void)

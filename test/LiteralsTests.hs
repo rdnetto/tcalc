@@ -24,9 +24,9 @@ literalsTests = testGroup "LiteralsTests" [
             testLiteralParser "1.0"      (LitScalar 1),
             testLiteralParser "1"        (LitScalar 1),
             testLiteralParser "-12.34"   (LitScalar (-12.34)),
-            testLiteralParser "1d2h3m4s" (LitDuration $ Duration 93784),
             testLiteralParser "1.5s"     (LitDuration $ Duration 1.5),
-            testLiteralParser "1s"       (LitDuration $ Duration 1),
+            testLiteralParser "1m"       (LitDuration $ Duration 60),
+            testLiteralParser "1d2h3m4s" (LitDuration $ Duration 93784),
             testLiteralParser "0.5s"     (LitDuration $ Duration 0.5),
             testLiteralParser "0s"       (LitDuration $ Duration 0),
             testLiteralParser "-1m10s"   (LitDuration $ Duration (-70))
