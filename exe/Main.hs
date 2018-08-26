@@ -3,7 +3,7 @@ module Main where
 import BasicPrelude hiding (getContents)
 import qualified Prelude as P
 import System.IO.Error (ioError, catchIOError, isEOFError)
-import Text.Megaparsec (runParser)
+import Text.Megaparsec (runParser, eof)
 import Text.Megaparsec.Error (parseErrorPretty)
 
 import Interpreter
@@ -25,7 +25,7 @@ ignoreEOF f = catchIOError f handler where
 
 evalLine :: Text -> IO ()
 evalLine txt = do
-    let res = runParser exprParser "<stdin>" txt
+    let res = runParser (exprParser <* eof) "<stdin>" txt
     case res of
          Right ast -> evalAST ast
          Left  err -> P.putStrLn $ parseErrorPretty err
