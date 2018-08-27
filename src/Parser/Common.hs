@@ -1,12 +1,13 @@
 {-# LANGUAGE StrictData #-}
 
-module Parser.Common(Parser, lexeme, symbol, parens, spaceConsumer) where
+module Parser.Common(Parser, lexeme, symbol, parens, spaceConsumer, runParser') where
 
 import BasicPrelude
 import Data.Void (Void)
-import Text.Megaparsec (Parsec, between)
+import Text.Megaparsec (Parsec, between, runParser, eof)
 import Text.Megaparsec.Char (space1)
 import qualified Text.Megaparsec.Char.Lexer as L
+import Text.Megaparsec.Error (parseErrorPretty)
 
 
 type Parser = Parsec Void Text
@@ -26,3 +27,14 @@ symbol = L.symbol spaceConsumer
 
 parens :: Parser a -> Parser a
 parens = between (symbol "(") (symbol ")")
+
+
+-- Helper function for running a parser.
+-- Returns either an error messsage, or the parsed value
+runParser' :: Parser a -> Text -> Either String a
+runParser' p txt = do
+    let res = runParser (p <* eof) "<stdin>" txt
+    case res of
+         Right x   -> pure x
+         Left  err -> Left $ parseErrorPretty err
+
