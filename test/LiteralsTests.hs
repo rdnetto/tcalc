@@ -16,6 +16,7 @@ literalsTests = testGroup "LiteralsTests" [
             testDurationRendering 1     "1s",
             testDurationRendering 0.5   "0.5s",
             testDurationRendering 0     "0s",
+            testDurationRendering 60    "1m",
             testDurationRendering (-70) "-1m10s"
         ],
         testGroup "literalParser" [

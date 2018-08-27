@@ -109,18 +109,22 @@ durationToken = do
 renderLiteral :: Literal -> Text
 renderLiteral (LitScalar s) = tshow s
 renderLiteral (LitDuration (Duration totalSecs)) = f (reverse absoluteUnits) totalSecs "" where
-    f :: [(Char, Int)] -> Double -> Text -> Text
+    f :: [(Char, Int)]  -- assoc list of units to process
+      -> Double         -- remaining no. of secs
+      -> Text           -- accumulator of text to append to
+      -> Text           -- result
+
     f [] _ _ = error "This should never happen"
     -- If negative, need to handle sign upfront to ensure floor does the right thing
     f us s "" | s < 0 = f us (-s) ("-")
-    -- When there's just seconds left, render the entire thing (omitting decimal place if not relevant)
-    f [_] s x = x ++ s' ++ "s" where
-        sInt :: Int
-            = floor s
-        s' = if s == fromIntegral sInt
-                then tshow sInt
-                else tshow s
 
+    -- When there's just seconds left, render the entire thing (omitting decimal place if not relevant)
+    -- (but only if there's a non-zero amount *and* the existing string is non-empty)
+    f [_] s "" = renderNum s ++ "s"
+    f [_] 0 x  = x
+    f [_] s x  = x ++ renderNum s ++ "s"
+
+    -- Recursive case
     f ((unit, multiplier):us) s0 res = f us s' res' where
         m = fromIntegral multiplier
         n :: Int
@@ -131,3 +135,11 @@ renderLiteral (LitDuration (Duration totalSecs)) = f (reverse absoluteUnits) tot
         res' = case n of
                     0 -> res
                     _ -> res ++ tshow n ++ singleton unit
+
+renderNum :: Double -> Text
+renderNum s = s' where
+    sInt :: Int
+        = floor s
+    s' = if s == fromIntegral sInt
+            then tshow sInt
+            else tshow s
