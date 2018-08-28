@@ -8,6 +8,12 @@ Make sure you have [Stack](https://docs.haskellstack.org/en/stable/README/#how-t
 
     stack install
 
+in a checkout of this repository.
+
+## Usage
+Run `tcalc` for a REPL, or `tcalc foo.tc` to run a script.
+You can exit the REPL by entering `quit`, `exit` or Ctrl-D (end of file).
+
 ## Syntax
 ### Literals
 Tcalc literals are either *scalars* or *durations*. A *scalar* is a signed floating point number. A *duration* is (effectively) a scalar number of seconds. The syntax for a duration consists of one or more adjacent (not space separated)`[NUM][UNIT]` pairs, where `NUM` is an unsigned floating point number and `UNIT` is one of the following:

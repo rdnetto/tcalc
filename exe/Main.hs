@@ -22,7 +22,9 @@ repl :: forall m
      -> m ()
 repl prompt f = runInputT defaultSettings loop where
     loop = getInputLine prompt >>= process
-    process Nothing      = return ()
+    process Nothing       = return ()
+    process (Just "quit") = return ()
+    process (Just "exit") = return ()
     process (Just input) = f (T.pack input) >> loop
 
 
