@@ -29,7 +29,7 @@ library
                        megaparsec,
                        text
 
-executable tcalc-exe
+executable tcalc
   hs-source-dirs:      exe
   main-is:             Main.hs
   default-language:    Haskell2010
