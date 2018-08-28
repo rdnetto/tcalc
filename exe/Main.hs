@@ -2,6 +2,7 @@ module Main where
 
 import BasicPrelude hiding (getContents)
 import qualified Data.Text as T
+import System.Console.ANSI (SGR(SetColor, Reset), ConsoleLayer(Foreground), ColorIntensity(Vivid), Color(Red), setSGR)
 import System.Console.Haskeline (MonadException, InputT, runInputT, defaultSettings, getInputLine)
 
 import Interpreter
@@ -29,11 +30,17 @@ evalLine :: MonadIO m => Text -> m ()
 evalLine txt = do
     case runParser' exprParser txt of
          Right ast -> evalAST ast
-         Left  err -> putStrLn (T.pack err)
+         Left  err -> printError (T.pack err)
 
 evalAST :: MonadIO m => Expr -> m ()
 evalAST expr = res where
     res = case evaluateExpr expr of
                Right e  -> putStrLn $ renderLiteral e
-               Left msg -> putStrLn msg
+               Left msg -> printError msg
 
+-- Used to display errors
+printError :: MonadIO m => Text -> m ()
+printError err = liftIO $ do
+    setSGR [SetColor Foreground Vivid Red]
+    putStrLn $ "ERROR: " ++ err
+    setSGR [Reset]

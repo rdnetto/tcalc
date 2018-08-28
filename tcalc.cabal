@@ -38,6 +38,7 @@ executable tcalc
                        ScopedTypeVariables
   ghc-options:         -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints
   build-depends:       base >= 4.7 && < 5,
+                       ansi-terminal,
                        basic-prelude,
                        haskeline,
                        megaparsec,
