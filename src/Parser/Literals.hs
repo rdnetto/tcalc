@@ -1,4 +1,3 @@
-{-# LANGUAGE StrictData #-}
 {-# LANGUAGE TypeApplications #-}
 
 module Parser.Literals (Literal(..), Duration(..), literalParser, renderLiteral, isScalar, isDuration) where
@@ -6,48 +5,12 @@ module Parser.Literals (Literal(..), Duration(..), literalParser, renderLiteral,
 import BasicPrelude
 import Control.Applicative (some)
 import Data.Text (singleton)
-import Prelude (Semigroup)
 import Text.Megaparsec (try)
 import Text.Megaparsec.Char (oneOf)
 import qualified Text.Megaparsec.Char.Lexer as L
 
 import Parser.Common
-
-
-data Literal
-    = LitScalar Double
-    | LitDuration Duration
-    deriving (Eq, Show)
-
--- This is stored as the number of seconds.
-newtype Duration = Duration Double
-    deriving (Eq, Show)
-
-isScalar :: Literal -> Bool
-isScalar (LitScalar _) = True
-isScalar _ = False
-
-isDuration :: Literal -> Bool
-isDuration (LitDuration _) = True
-isDuration _ = False
-
--- Multiplication is non-sensical for durations, so the monoid instance is unambiguously addition
-instance Semigroup Duration where
-    (Duration a) <> (Duration b) = Duration (a + b)
-
-instance Monoid Duration where
-    mempty = Duration 0
-
--- Not technically valid because we don't implement (*), but that's what megaparsec's
--- signed combinator is implemented in terms of, so...
-instance Num Duration where
-    (Duration a) + (Duration b) = Duration (a + b)
-    (Duration a) - (Duration b) = Duration (a - b)
-    (Duration _) * (Duration _) = error "Multiplication is not valid for Durations"
-    negate (Duration d) = Duration (negate d)
-    abs (Duration d) = Duration (abs d)
-    signum (Duration d) = Duration (signum d)
-    fromInteger = Duration . fromInteger
+import Types
 
 
 {-

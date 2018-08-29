@@ -19,7 +19,8 @@ library
                        Parser.Expression,
                        Parser.Identifier,
                        Parser.Literals,
-                       Parser.Statement
+                       Parser.Statement,
+                       Types
   default-language:    Haskell2010
   default-extensions:  NoImplicitPrelude,
                        OverloadedStrings,

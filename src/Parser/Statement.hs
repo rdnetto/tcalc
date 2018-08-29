@@ -1,5 +1,3 @@
-{-# LANGUAGE StrictData #-}
-
 module Parser.Statement(Statement(..), statementParser) where
 
 import BasicPrelude
@@ -8,12 +6,8 @@ import Text.Megaparsec (try, optional)
 import Parser.Common
 import Parser.Expression
 import Parser.Identifier
+import Types
 
-
-data Statement
-    = PrintStatement Expr
-    | LetStatement Identifier Expr
-    deriving (Eq, Show)
 
 statementParser :: Parser Statement
 statementParser = try printP <|> letP where
@@ -27,13 +21,3 @@ statementParser = try printP <|> letP where
             <*> idParser
             <*  lSymbol "="
             <*> exprParser
-
-    {-
-    letP = do
-        lSymbol "let"
-        id' <- idP
-        lSymbol "="
-        val <- expressionParser
-        return $ LetStatement id' val
-
-        -}

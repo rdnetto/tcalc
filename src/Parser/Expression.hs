@@ -1,27 +1,13 @@
-{-# LANGUAGE StrictData #-}
-
 module Parser.Expression(Expr(..), BinaryOperator(..), exprParser, boSymbol) where
 
 import BasicPrelude
 import Text.Megaparsec.Expr (makeExprParser, Operator(..))
 
 import Parser.Common
-import Parser.Identifier
 import Parser.Literals
+import Types
 
 -- Based on this tutorial: https://markkarpov.com/megaparsec/parsing-simple-imperative-language.html
-
-data Expr
-    = BinaryOp BinaryOperator Expr Expr
-    | ExprLiteral Literal
-    deriving (Eq, Show)
-
-data BinaryOperator
-    = BOAdd
-    | BOMinus
-    | BOMultiply
-    | BODivide
-    deriving (Eq, Show)
 
 boSymbol :: BinaryOperator -> Char
 boSymbol BOAdd      = '+'

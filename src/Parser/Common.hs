@@ -1,16 +1,12 @@
-{-# LANGUAGE StrictData #-}
-
 module Parser.Common(Parser, lexeme, symbol, parens, spaceConsumer, runParser') where
 
 import BasicPrelude
-import Data.Void (Void)
-import Text.Megaparsec (Parsec, between, runParser, eof)
+import Text.Megaparsec (between, runParser, eof)
 import Text.Megaparsec.Char (space1)
 import qualified Text.Megaparsec.Char.Lexer as L
 import Text.Megaparsec.Error (parseErrorPretty)
 
-
-type Parser = Parsec Void Text
+import Types
 
 -- Defines how whitespace + comments are used
 spaceConsumer :: Parser ()

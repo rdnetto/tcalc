@@ -1,6 +1,6 @@
 module Main where
 
-import BasicPrelude hiding (getContents)
+import BasicPrelude
 import qualified Data.Text as T
 import System.Console.Haskeline (MonadException, InputT, runInputT, defaultSettings, getInputLine)
 
