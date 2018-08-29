@@ -17,7 +17,9 @@ library
   exposed-modules:     Interpreter
                        Parser.Common,
                        Parser.Expression,
-                       Parser.Literals
+                       Parser.Identifier,
+                       Parser.Literals,
+                       Parser.Statement
   default-language:    Haskell2010
   default-extensions:  NoImplicitPrelude,
                        OverloadedStrings,
@@ -25,6 +27,7 @@ library
                        ScopedTypeVariables
   ghc-options:         -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints
   build-depends:       base >= 4.7 && < 5,
+                       ansi-terminal,
                        basic-prelude,
                        megaparsec,
                        text
@@ -38,7 +41,6 @@ executable tcalc
                        ScopedTypeVariables
   ghc-options:         -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints
   build-depends:       base >= 4.7 && < 5,
-                       ansi-terminal,
                        basic-prelude,
                        haskeline,
                        megaparsec,

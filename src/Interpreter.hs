@@ -2,11 +2,31 @@ module Interpreter where
 
 import BasicPrelude
 import qualified Data.Text as T
+import System.Console.ANSI (SGR(SetColor, Reset), ConsoleLayer(Foreground), ColorIntensity(Vivid), Color(Red), setSGR)
 
 import Parser.Expression
 import Parser.Literals
+import Parser.Statement
 
 type EvalRes = Either Text Literal
+
+
+-- Used to display errors
+printError :: MonadIO m => Text -> m ()
+printError err = liftIO $ do
+    setSGR [SetColor Foreground Vivid Red]
+    putStrLn $ "ERROR: " ++ err
+    setSGR [Reset]
+
+-- The entrry point for the interpreter
+-- TODO: this should run in its own state monad
+runStatement :: MonadIO m => Statement -> m ()
+runStatement (PrintStatement expr) = res where
+    res = case evaluateExpr expr of
+               Right e  -> putStrLn $ renderLiteral e
+               Left msg -> printError msg
+runStatement (LetStatement id' expr) = printError "not implemented" -- TODO
+
 
 -- Evalutes an expression to its simplest form, or an error message
 evaluateExpr :: Expr -> EvalRes
