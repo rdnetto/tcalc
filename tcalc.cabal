@@ -14,7 +14,9 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Interpreter
+  exposed-modules:     Interpreter,
+                       InterpreterT
+                       LensOrphans,
                        Parser.Common,
                        Parser.Expression,
                        Parser.Identifier,
@@ -31,7 +33,12 @@ library
                        ansi-terminal,
                        basic-prelude,
                        megaparsec,
-                       text
+                       microlens,
+                       microlens-mtl,
+                       microlens-th,
+                       mtl,
+                       text,
+                       unordered-containers
 
 executable tcalc
   hs-source-dirs:      exe

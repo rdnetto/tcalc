@@ -5,12 +5,13 @@ import qualified Data.Text as T
 import System.Console.Haskeline (MonadException, InputT, runInputT, defaultSettings, getInputLine)
 
 import Interpreter
+import InterpreterT
 import Parser.Common (runParser')
 import Parser.Statement
 
 
 main :: IO ()
-main = repl "> " evalLine
+main = runInterpreterT $ repl "> " evalLine
 
 -- Helper function for defining a REPL
 repl :: forall m

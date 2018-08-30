@@ -1,3 +1,4 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE StrictData #-}
 
 module Types where
@@ -13,7 +14,7 @@ type Parser = Parsec Void Text
 
 -- Identifier of a variable
 newtype Identifier = Identifier Text
-    deriving (Eq, Show)
+    deriving (Eq, Show, Hashable)
 
 
 -- Literals
