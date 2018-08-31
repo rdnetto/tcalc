@@ -52,6 +52,7 @@ executable tcalc
                        basic-prelude,
                        haskeline,
                        megaparsec,
+                       mtl,
                        tcalc,
                        text
 

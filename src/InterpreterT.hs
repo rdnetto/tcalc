@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module InterpreterT (
-    InterpreterT,
+    InterpreterT(..),
     runInterpreterT,
     lookupVar,
     setVar
@@ -30,7 +30,26 @@ data InterpreterState = InterpreterState {
 makeLenses ''InterpreterState
 
 -- Monad transformer providing ability to execute parsed statements
-newtype InterpreterT m a = InterpreterT (StateT InterpreterState m a)
+newtype InterpreterT m a = InterpreterT {
+    unInterpreterT :: StateT InterpreterState m a
+}
+
+instance Functor f => Functor (InterpreterT f) where
+    fmap f (InterpreterT x) = InterpreterT $ fmap f x
+
+instance (Applicative f, Monad f) => Applicative (InterpreterT f) where
+    pure = InterpreterT . pure
+    liftA2 f fa fb = InterpreterT
+                   $ f
+                   <$> unInterpreterT fa
+                   <*> unInterpreterT fb
+
+instance Monad m => Monad (InterpreterT m) where
+    return = InterpreterT . return
+    (>>=) (InterpreterT ma) f = InterpreterT $ ma >>= (unInterpreterT . f)
+
+instance MonadIO m => MonadIO (InterpreterT m) where
+    liftIO = InterpreterT . liftIO
 
 runInterpreterT :: MonadIO m => InterpreterT m a -> m a
 runInterpreterT (InterpreterT s) = evalStateT s initialState where

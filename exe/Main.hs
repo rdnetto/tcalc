@@ -1,8 +1,9 @@
 module Main where
 
 import BasicPrelude
+import Control.Monad.State.Strict (StateT(..), runStateT)
 import qualified Data.Text as T
-import System.Console.Haskeline (MonadException, InputT, runInputT, defaultSettings, getInputLine)
+import System.Console.Haskeline (MonadException(..), RunIO(..), InputT, runInputT, defaultSettings, getInputLine)
 
 import Interpreter
 import InterpreterT
@@ -32,4 +33,13 @@ evalLine :: MonadIO m => Text -> m ()
 evalLine txt = do
     case runParser' statementParser txt of
          Right ast -> runStatement ast
-         Left  err -> printError (T.pack err)
+         Left  err -> printErrorSimple (T.pack err)
+
+
+instance MonadException m => MonadException (InterpreterT m) where
+    controlIO f = InterpreterT . StateT $ \s -> controlIO $ \(RunIO run) -> let
+                    runInt = flip runStateT s . unInterpreterT
+                    run' = RunIO (fmap (InterpreterT . StateT . const) . run . runInt)
+                    in fmap runInt $ f run'
+
+
