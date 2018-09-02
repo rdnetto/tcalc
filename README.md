@@ -45,3 +45,6 @@ Scalars and durations may be mixed freely where it makes sense to do so. e.g.
 1m * 1m
 > Invalid operation (type mismatch): LitDuration (Duration 60.0) * LitDuration (Duration 60.0)
 ```
+### Statements
+TODO
+

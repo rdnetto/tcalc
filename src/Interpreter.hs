@@ -6,6 +6,7 @@ import System.Console.ANSI (SGR(SetColor, Reset), ConsoleLayer(Foreground), Colo
 import Text.Megaparsec (SourcePos(..))
 import Text.Megaparsec.Pos (unPos)
 
+import InterpreterT
 import Parser.Expression
 import Parser.Literals
 import Parser.Statement
@@ -34,7 +35,7 @@ printErrorSimple err = liftIO $ do
 
 -- The entrry point for the interpreter
 -- TODO: this should run in its own state monad
-runStatement :: MonadIO m => Statement -> m ()
+runStatement :: (MonadIO m, MonadInterpreter m) => Statement -> m ()
 runStatement (PrintStatement pos expr) = res where
     res = case evaluateExpr expr of
                Right e  -> print pos >> putStrLn (renderLiteral e)

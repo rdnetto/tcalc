@@ -38,6 +38,7 @@ library
                        microlens-th,
                        mtl,
                        text,
+                       transformers,
                        unordered-containers
 
 executable tcalc

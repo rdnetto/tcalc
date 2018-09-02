@@ -29,17 +29,18 @@ repl prompt f = runInputT defaultSettings loop where
 
 
 -- TODO: add variables, support for writing scripts
-evalLine :: MonadIO m => Text -> m ()
+evalLine :: (MonadIO m, MonadInterpreter m)
+         => Text -> m ()
 evalLine txt = do
     case runParser' statementParser txt of
          Right ast -> runStatement ast
          Left  err -> printErrorSimple (T.pack err)
 
 
+-- Orphan instances, needed since the library doesn't depend on haskeline
 instance MonadException m => MonadException (InterpreterT m) where
     controlIO f = InterpreterT . StateT $ \s -> controlIO $ \(RunIO run) -> let
                     runInt = flip runStateT s . unInterpreterT
                     run' = RunIO (fmap (InterpreterT . StateT . const) . run . runInt)
                     in fmap runInt $ f run'
-
 

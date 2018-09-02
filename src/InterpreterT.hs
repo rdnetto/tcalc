@@ -1,15 +1,19 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module InterpreterT (
     InterpreterT(..),
     runInterpreterT,
+    MonadInterpreter(..),
     lookupVar,
     setVar
 ) where
 
 import BasicPrelude
 import Control.Monad.State.Strict (StateT, evalStateT, gets)
+import Control.Monad.Trans.Class (MonadTrans(..))
 import qualified Data.HashMap.Strict as DMS
 import Lens.Micro (ix)
 import Lens.Micro.Extras (preview)
@@ -32,36 +36,26 @@ makeLenses ''InterpreterState
 -- Monad transformer providing ability to execute parsed statements
 newtype InterpreterT m a = InterpreterT {
     unInterpreterT :: StateT InterpreterState m a
-}
+} deriving (Functor, Applicative, Monad, MonadIO, MonadTrans)
 
-instance Functor f => Functor (InterpreterT f) where
-    fmap f (InterpreterT x) = InterpreterT $ fmap f x
+class Monad m => MonadInterpreter m where
+    liftInterpreter :: StateT InterpreterState m a -> InterpreterT m a
 
-instance (Applicative f, Monad f) => Applicative (InterpreterT f) where
-    pure = InterpreterT . pure
-    liftA2 f fa fb = InterpreterT
-                   $ f
-                   <$> unInterpreterT fa
-                   <*> unInterpreterT fb
-
-instance Monad m => Monad (InterpreterT m) where
-    return = InterpreterT . return
-    (>>=) (InterpreterT ma) f = InterpreterT $ ma >>= (unInterpreterT . f)
-
-instance MonadIO m => MonadIO (InterpreterT m) where
-    liftIO = InterpreterT . liftIO
+instance Monad m => MonadInterpreter (InterpreterT m) where
+    liftInterpreter = InterpreterT
 
 runInterpreterT :: MonadIO m => InterpreterT m a -> m a
 runInterpreterT (InterpreterT s) = evalStateT s initialState where
     initialState = InterpreterState DMS.empty
 
+
 -- Helper functions
-lookupVar :: Monad m => Identifier -> InterpreterT m (Maybe Literal)
-lookupVar k = InterpreterT
+lookupVar :: MonadInterpreter m => Identifier -> InterpreterT m (Maybe Literal)
+lookupVar k = liftInterpreter
             . gets
             . preview
             $ vars . ix k
 
-setVar :: Monad m => Identifier -> Literal -> InterpreterT m ()
-setVar k v = InterpreterT (vars %= DMS.insert k v)
+setVar :: MonadInterpreter m => Identifier -> Literal -> InterpreterT m ()
+setVar k v = liftInterpreter (vars %= DMS.insert k v)
 
