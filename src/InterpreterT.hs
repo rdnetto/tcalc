@@ -2,6 +2,7 @@
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE Rank2Types #-}
 
 module InterpreterT (
     InterpreterT(..),
@@ -12,7 +13,8 @@ module InterpreterT (
 ) where
 
 import BasicPrelude
-import Control.Monad.State.Strict (StateT, evalStateT, gets)
+import Control.Monad.State.Class (MonadState(..), gets)
+import Control.Monad.State.Strict (StateT, evalStateT)
 import Control.Monad.Trans.Class (MonadTrans(..))
 import qualified Data.HashMap.Strict as DMS
 import Lens.Micro (ix)
@@ -38,24 +40,32 @@ newtype InterpreterT m a = InterpreterT {
     unInterpreterT :: StateT InterpreterState m a
 } deriving (Functor, Applicative, Monad, MonadIO, MonadTrans)
 
+-- Needed to avoid impredicative polymorphism problems
+data StateEffect a = StateEffect (forall n. MonadState InterpreterState n => n a)
+
+-- This is a rather indirect way of embedding a state action into the monad without coupling ourselves to the impl
 class Monad m => MonadInterpreter m where
-    liftInterpreter :: StateT InterpreterState m a -> InterpreterT m a
+    liftState :: StateEffect a -> m a
 
 instance Monad m => MonadInterpreter (InterpreterT m) where
-    liftInterpreter = InterpreterT
+    liftState (StateEffect f) = InterpreterT f
 
-runInterpreterT :: MonadIO m => InterpreterT m a -> m a
+runInterpreterT :: MonadIO m
+                => InterpreterT m a -> m a
 runInterpreterT (InterpreterT s) = evalStateT s initialState where
     initialState = InterpreterState DMS.empty
 
-
 -- Helper functions
-lookupVar :: MonadInterpreter m => Identifier -> InterpreterT m (Maybe Literal)
-lookupVar k = liftInterpreter
-            . gets
+lookupVar :: MonadInterpreter m
+          => Identifier -> m (Maybe Literal)
+lookupVar k = liftState
+            $ StateEffect
+            $ gets
             . preview
-            $ vars . ix k
+            $ vars
+            . ix k
 
-setVar :: MonadInterpreter m => Identifier -> Literal -> InterpreterT m ()
-setVar k v = liftInterpreter (vars %= DMS.insert k v)
+setVar :: MonadInterpreter m
+       => Identifier -> Literal -> m ()
+setVar k v = liftState $ StateEffect (vars %= DMS.insert k v)
 

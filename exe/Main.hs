@@ -44,3 +44,5 @@ instance MonadException m => MonadException (InterpreterT m) where
                     run' = RunIO (fmap (InterpreterT . StateT . const) . run . runInt)
                     in fmap runInt $ f run'
 
+instance MonadInterpreter m => MonadInterpreter (InputT m) where
+    liftState = lift . liftState
