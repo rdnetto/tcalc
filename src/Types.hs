@@ -7,7 +7,6 @@ import BasicPrelude
 import Data.Void (Void)
 import Prelude (Semigroup)
 import Text.Megaparsec (Parsec)
-import Text.Megaparsec.Pos (SourcePos)
 
 
 -- The parser type
@@ -70,7 +69,7 @@ data BinaryOperator
 
 
 data Statement
-    = PrintStatement SourcePos Expr
-    | LetStatement SourcePos Identifier Expr
+    = PrintStatement Expr
+    | LetStatement Identifier Expr
     deriving (Eq, Show)
 

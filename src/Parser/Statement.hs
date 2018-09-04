@@ -1,8 +1,7 @@
 module Parser.Statement(Statement(..), statementParser) where
 
 import BasicPrelude
-import qualified Data.List.NonEmpty as NE
-import Text.Megaparsec (try, optional, getParserState, State(statePos))
+import Text.Megaparsec (try, optional)
 
 import Parser.Common
 import Parser.Expression
@@ -15,13 +14,10 @@ statementParser = try printP <|> letP where
     lSymbol = lexeme . symbol
 
     printP = optional (lSymbol "print")
-            *>  (PrintStatement <$> pos <*> exprParser)
+            *>  (PrintStatement <$> exprParser)
 
     letP = lSymbol "let"
             *>  pure LetStatement
-            <*> pos
             <*> idParser
             <*  lSymbol "="
             <*> exprParser
-
-    pos = NE.head . statePos <$> getParserState

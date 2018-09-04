@@ -1,57 +1,35 @@
-module Interpreter (printError, printErrorSimple, runStatement) where
+module Interpreter (runStatement) where
 
 import BasicPrelude
+import Control.Monad.Except (MonadError(..))
 import qualified Data.Text as T
-import System.Console.ANSI (SGR(SetColor, Reset), ConsoleLayer(Foreground), ColorIntensity(Vivid), Color(Red), setSGR)
-import Text.Megaparsec (SourcePos(..))
-import Text.Megaparsec.Pos (unPos)
 
 import InterpreterT
 import Parser.Expression
 import Parser.Literals
 import Parser.Statement
 
-type EvalRes = Either Text Literal
 
-
--- Used to display errors
-printError :: MonadIO m => SourcePos -> Text -> m ()
-printError (SourcePos name line col) err = printErrorSimple msg where
-    msg = concat [
-            T.pack name,
-            ":",
-            tshow $ unPos line,
-            ":",
-            tshow $ unPos col,
-            ":\n",
-            err
-        ]
-
-printErrorSimple :: MonadIO m => Text -> m ()
-printErrorSimple err = liftIO $ do
-    setSGR [SetColor Foreground Vivid Red]
-    putStrLn $ "ERROR " ++ err
-    setSGR [Reset]
-
--- The entrry point for the interpreter
--- TODO: this should run in its own state monad
-runStatement :: (MonadIO m, MonadInterpreter m) => Statement -> m ()
-runStatement (PrintStatement pos expr) = res where
-    res = case evaluateExpr expr of
-               Right e  -> print pos >> putStrLn (renderLiteral e)
-               Left msg -> printError pos msg
-runStatement (LetStatement pos id' expr) = printError pos $ "not implemented" -- TODO
+-- The entry point for the interpreter
+runStatement :: (MonadIO m, MonadInterpreter m, MonadError Text m)
+             => Statement -> m ()
+runStatement (PrintStatement expr) = do
+    e <- evaluateExpr expr
+    putStrLn $ renderLiteral e
+runStatement (LetStatement varId expr) = setVar varId =<< evaluateExpr expr
 
 
 -- Evalutes an expression to its simplest form, or an error message
-evaluateExpr :: Expr -> EvalRes
+evaluateExpr :: (MonadInterpreter m, MonadError Text m)
+             => Expr -> m Literal
 evaluateExpr (ExprLiteral lit) = pure lit
 evaluateExpr (BinaryOp op e1 e2) = do
     l1 <- evaluateExpr e1
     l2 <- evaluateExpr e2
     evalBinOp op l1 l2
 
-evalBinOp :: BinaryOperator -> Literal -> Literal -> EvalRes
+evalBinOp :: MonadError Text m
+          => BinaryOperator -> Literal -> Literal -> m Literal
 evalBinOp op l1 l2
     -- All operations are defined for scalars
     | isScalar l1   && isScalar l2                                       = scalarRes
@@ -66,7 +44,7 @@ evalBinOp op l1 l2
     where
         scalarRes   = pure . LitScalar              $ exec op l1 l2
         durationRes = pure . LitDuration . Duration $ exec op l1 l2
-        mismatch    = Left $ concat [
+        mismatch    = throwError $ concat [
                 "Invalid operation (type mismatch): ",
                 tshow l1,
                 T.pack (' ' : boSymbol op : " "),
