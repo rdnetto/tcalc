@@ -56,8 +56,9 @@ instance Num Duration where
 
 
 data Expr
-    = BinaryOp BinaryOperator Expr Expr
-    | ExprLiteral Literal
+    = BinaryOp BinaryOperator Expr Expr     -- a binary operator
+    | ExprLiteral Literal                   -- a literal
+    | ExprVarRef Identifier                 -- a variable
     deriving (Eq, Show)
 
 data BinaryOperator

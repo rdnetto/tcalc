@@ -27,6 +27,11 @@ evaluateExpr (BinaryOp op e1 e2) = do
     l1 <- evaluateExpr e1
     l2 <- evaluateExpr e2
     evalBinOp op l1 l2
+evaluateExpr (ExprVarRef varId) = do
+    res <- lookupVar varId
+    case res of
+         Just lit -> pure lit
+         Nothing  -> throwError $ "Unknown identifier: " ++ tshow varId
 
 evalBinOp :: MonadError Text m
           => BinaryOperator -> Literal -> Literal -> m Literal

@@ -4,6 +4,7 @@ import BasicPrelude
 import Text.Megaparsec.Expr (makeExprParser, Operator(..))
 
 import Parser.Common
+import Parser.Identifier
 import Parser.Literals
 import Types
 
@@ -18,7 +19,9 @@ boSymbol BODivide   = '/'
 exprParser :: Parser Expr
 exprParser = makeExprParser term ops where
     -- a term in the expression
-    term = parens exprParser <|> (ExprLiteral <$> literalParser)
+    term = parens exprParser
+         <|> (ExprLiteral <$> literalParser)
+         <|> (ExprVarRef <$> idParser)
 
     -- Operator table
     ops = [
