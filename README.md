@@ -31,7 +31,7 @@ The *canonical form* of a duration is that which maximises the value of the larg
 > 1h12m
 ```
 
-### Operations
+### Expressions
 Tcalc supports standard arithmetic operators (addition, subtraction, multiplication, division, brackets).
 Scalars and durations may be mixed freely where it makes sense to do so. e.g.
 
@@ -45,6 +45,35 @@ Scalars and durations may be mixed freely where it makes sense to do so. e.g.
 1m * 1m
 > Invalid operation (type mismatch): LitDuration (Duration 60.0) * LitDuration (Duration 60.0)
 ```
-### Statements
-TODO
 
+The operands of a binary operator must be a literal, variable identifier or another expression. The use of brackets for precedence is supported:
+
+```
+> (1 + 2) * 3
+9
+```
+
+### Statements
+Tcalc supports two kinds of statements.
+
+*Print* statements are of the form `print expr`, and print the canonical form of the given expression. Note that the print keyword is optional for ease of use in the REPL, meaning the following are equivalent:
+
+```
+> print 1m + 2s
+1m2s
+> 1m + 2s
+1m2s
+```
+
+*Let* statements are of the form `let id = expr`, and assigns a variable named `id` to the value of the specified expression. The expression is computed before the assignment is performed, enabling common operations like incrementing.
+
+```
+> let x = 1
+> print x
+1.0
+> let x = x + 1
+> print x
+2.0
+> 2*x
+4.0
+```
