@@ -9,6 +9,7 @@ import System.Console.Haskeline (MonadException(..), RunIO(..), InputT, runInput
 import Text.Megaparsec (SourcePos(..))
 import Text.Megaparsec.Pos (unPos)
 
+import ArgParser
 import Interpreter
 import InterpreterT
 import Parser.Common
@@ -16,7 +17,17 @@ import Parser.Statement
 
 
 main :: IO ()
-main = runInterpreterT $ repl "> " evalLine
+main = do
+    args <- parseArgs
+    case args of
+         Just fp -> runInterpreterT $ runScript fp
+         Nothing -> runInterpreterT $ repl "> " evalLine
+
+-- Runs the specified script
+runScript :: FilePath -> InterpreterT IO ()
+runScript fp = do
+    txt <- getContents fp
+    error "Not implemented"
 
 -- Helper function for defining a REPL
 repl :: forall m
