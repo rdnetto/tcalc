@@ -21,6 +21,7 @@ library
                        Parser.Expression,
                        Parser.Identifier,
                        Parser.Literals,
+                       Parser.Pos,
                        Parser.Statement,
                        Types,
                        Util
@@ -38,6 +39,7 @@ library
                        microlens-mtl,
                        microlens-th,
                        mtl,
+                       parser-combinators,
                        text,
                        transformers,
                        unordered-containers

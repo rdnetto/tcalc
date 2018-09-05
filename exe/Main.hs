@@ -13,6 +13,7 @@ import ArgParser
 import Interpreter
 import InterpreterT
 import Parser.Common
+import Parser.Pos
 import Parser.Statement
 
 
@@ -51,7 +52,7 @@ evalLine txt = handle =<< runExceptT body where
     body = do
         -- runParser' will include position info, but runStatement doesn't have it,
         -- so we manually add it to the error message
-        ParseResult stmt pos <- runParser' statementParser txt
+        ParseResult stmt pos <- runParser' (withPos statementParser) txt
         withExceptT (renderPos pos)
                     (runStatement stmt)
 

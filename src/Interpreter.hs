@@ -7,7 +7,7 @@ import qualified Data.Text as T
 import InterpreterT
 import Parser.Expression
 import Parser.Literals
-import Parser.Statement
+import Types
 
 
 -- The entry point for the interpreter
