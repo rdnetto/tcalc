@@ -42,5 +42,5 @@ testLiteralParser str expected = testCase name res where
     name = "testLiteralParser " ++ textToString str
     res = case runParser' literalParser str of
              Right ast -> assertEqual "" expected ast
-             Left  err -> assertFailure err
+             Left  err -> assertFailure (textToString err)
 
