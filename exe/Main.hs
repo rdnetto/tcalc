@@ -6,6 +6,7 @@ import Control.Monad.Trans.Except (ExceptT, runExceptT, withExceptT)
 import qualified Data.Text as T
 import System.Console.ANSI (SGR(SetColor, Reset), ConsoleLayer(Foreground), ColorIntensity(Vivid), Color(Red), setSGR)
 import System.Console.Haskeline (MonadException(..), RunIO(..), InputT, runInputT, defaultSettings, getInputLine)
+import System.Exit (exitFailure)
 import Text.Megaparsec (SourcePos(..))
 import Text.Megaparsec.Pos (unPos)
 
@@ -15,6 +16,7 @@ import InterpreterT
 import Parser.Common
 import Parser.Pos
 import Parser.Statement
+import Types
 
 
 main :: IO ()
@@ -26,9 +28,10 @@ main = do
 
 -- Runs the specified script
 runScript :: FilePath -> InterpreterT IO ()
-runScript fp = do
-    txt <- getContents fp
-    error "Not implemented"
+runScript fp = handleErrors True body where
+    body = mapM_ execStatement
+            =<< runParser' programParser
+            =<< readFile fp
 
 -- Helper function for defining a REPL
 repl :: forall m
@@ -43,21 +46,12 @@ repl prompt f = runInputT defaultSettings loop where
     process (Just "exit") = return ()
     process (Just input) = f (T.pack input) >> loop
 
-
 -- Body of the REPL loop.
 -- Note that we discard the failure of each line, which would be incorrect for a script (TODO)
 evalLine :: (MonadIO m, MonadInterpreter m)
          => Text -> m ()
-evalLine txt = handle =<< runExceptT body where
-    body = do
-        -- runParser' will include position info, but runStatement doesn't have it,
-        -- so we manually add it to the error message
-        ParseResult stmt pos <- runParser' (withPos statementParser) txt
-        withExceptT (renderPos pos)
-                    (runStatement stmt)
-
-    handle (Right ()) = pure ()
-    handle (Left err) = printError err
+evalLine txt = handleErrors False body where
+    body = execStatement =<< runParser' (withPos statementParser) txt
 
 
 -- Orphan instances, needed since the library doesn't depend on haskeline
@@ -70,8 +64,20 @@ instance MonadException m => MonadException (InterpreterT m) where
 instance MonadInterpreter m => MonadInterpreter (InputT m) where
     liftState = lift . liftState
 
-instance MonadInterpreter m => MonadInterpreter (ExceptT e m) where
-    liftState = lift . liftState
+
+-- runExceptT with error handling
+-- if terminal is true, we terminate on errors
+handleErrors :: MonadIO m
+             => Bool -> ExceptT Text m () -> m ()
+handleErrors terminal action = f =<< runExceptT action where
+    f (Right ())  = pure ()
+    f (Left err) | terminal  = printError err >> liftIO exitFailure
+                 | otherwise = printError err
+
+-- Runs a statement, including the position info in any errors thrown
+execStatement :: (MonadInterpreter m, MonadIO m)
+              => ParseResult Statement -> ExceptT Text m ()
+execStatement (ParseResult stmt pos) = withExceptT (renderPos pos) (runStatement stmt)
 
 -- Used to display errors
 renderPos :: SourcePos -> Text -> Text

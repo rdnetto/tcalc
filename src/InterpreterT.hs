@@ -15,6 +15,7 @@ import BasicPrelude
 import Control.Monad.State.Class (MonadState(..), gets)
 import Control.Monad.State.Strict (StateT, evalStateT)
 import Control.Monad.Trans.Class (MonadTrans(..))
+import Control.Monad.Trans.Except (ExceptT)
 import qualified Data.HashMap.Strict as DMS
 import Lens.Micro (ix)
 import Lens.Micro.Extras (preview)
@@ -48,6 +49,9 @@ class Monad m => MonadInterpreter m where
 
 instance Monad m => MonadInterpreter (InterpreterT m) where
     liftState (StateEffect f) = InterpreterT f
+
+instance MonadInterpreter m => MonadInterpreter (ExceptT e m) where
+    liftState = lift . liftState
 
 runInterpreterT :: MonadIO m
                 => InterpreterT m a -> m a

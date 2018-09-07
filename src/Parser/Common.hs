@@ -29,7 +29,6 @@ parens = between (symbol "(") (symbol ")")
 
 
 -- Helper function for running a parser.
--- Returns either an error messsage, or the parsed value
 runParser' :: MonadError Text m
            => Parser a -> Text -> m a
 runParser' p txt = liftEither
