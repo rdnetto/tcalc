@@ -79,4 +79,5 @@ test-suite tcalc_test
                        OverloadedStrings,
                        ScopedTypeVariables
   main-is:             Spec.hs
-  other-modules:       LiteralsTests
+  other-modules:       LiteralsTests,
+                       StatementTests
