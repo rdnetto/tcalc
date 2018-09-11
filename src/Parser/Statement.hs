@@ -1,7 +1,7 @@
 module Parser.Statement(statementParser, programParser) where
 
 import BasicPrelude
-import Control.Monad.Combinators (sepBy, many)
+import Control.Monad.Combinators (sepEndBy, many)
 import Text.Megaparsec (try, optional)
 import Text.Megaparsec.Char (eol)
 
@@ -26,4 +26,4 @@ statementParser = try printP <|> letP where
             <*> exprParser
 
 programParser :: Parser [ParseResult Statement]
-programParser = (withPos statementParser `sepBy` eol) <* many eol
+programParser = (withPos statementParser `sepEndBy` eol) <* many eol where

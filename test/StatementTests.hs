@@ -13,21 +13,35 @@ import Types
 statementTests :: TestTree
 statementTests = testGroup "StatementTests" [
         testGroup "programParser" [
-            testProgramParse "single line" [
+            testProgramParse "single line (no newline)"
                     "print 1"
-                ] [
+                [
                     PrintStatement (ExprLiteral (LitScalar 1.0))
                 ],
-            testProgramParse "multiple lines" [
+            testProgramParse "single line (with newline)"
+                    "print 1\n"
+                [
+                    PrintStatement (ExprLiteral (LitScalar 1.0))
+                ],
+            testProgramParse "single line (extra newlines)"
+                    "print 1\n\n"
+                [
+                    PrintStatement (ExprLiteral (LitScalar 1.0))
+                ],
+            testProgramParse "multiple lines" (unlines [
                     "print 1",
                     "print 2"
-                ] []
+                ])
+                [
+                    PrintStatement (ExprLiteral (LitScalar 1.0)),
+                    PrintStatement (ExprLiteral (LitScalar 2.0))
+                ]
         ]
     ]
 
-testProgramParse :: TestName ->  [Text] -> [Statement] -> TestTree
-testProgramParse name lines expected = testCase name $ do
-    case runParser' programParser (unlines lines) of
+testProgramParse :: TestName ->  Text -> [Statement] -> TestTree
+testProgramParse name input expected = testCase name $ do
+    case runParser' programParser input of
         Right res -> assertEqual "" expected $ map parseValue res
         Left  err -> assertFailure (textToString err)
 
