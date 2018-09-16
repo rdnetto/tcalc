@@ -1,83 +1,93 @@
-name:                tcalc
-version:             0.1.0.0
-synopsis:            CLI for performing time-based calculations.
--- description:
-homepage:            https://github.com/rdnetto/tcalc#readme
-license:             Apache
-license-file:        LICENSE
-author:              Reuben D'Netto
-maintainer:          rdnetto@gmail.com
-copyright:           Copyright 2018
-category:            Web
-build-type:          Simple
-cabal-version:       >=1.10
+-- This file has been generated from package.yaml by hpack version 0.21.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 8f4ffcc0ae019cb0a9ccd3f08b7710337e0021708446afab93af91294a499abb
+
+name:           tcalc
+version:        0.1.0.0
+synopsis:       CLI for performing time-based calculations.
+category:       Web
+homepage:       https://github.com/rdnetto/tcalc#readme
+author:         Reuben D'Netto
+maintainer:     rdnetto@gmail.com
+copyright:      Copyright 2018
+license:        Apache
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
 
 library
-  hs-source-dirs:      src
-  exposed-modules:     Interpreter,
-                       InterpreterT
-                       LensOrphans,
-                       Parser.Common,
-                       Parser.Expression,
-                       Parser.Identifier,
-                       Parser.Literals,
-                       Parser.Pos,
-                       Parser.Statement,
-                       Types,
-                       Util
-  default-language:    Haskell2010
-  default-extensions:  FlexibleContexts,
-                       NoImplicitPrelude,
-                       OverloadedStrings,
-                       PartialTypeSignatures,
-                       ScopedTypeVariables
-  ghc-options:         -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints
-  build-depends:       base >= 4.7 && < 5,
-                       basic-prelude,
-                       megaparsec,
-                       microlens,
-                       microlens-mtl,
-                       microlens-th,
-                       mtl,
-                       parser-combinators,
-                       text,
-                       transformers,
-                       unordered-containers
+  exposed-modules:
+      Interpreter
+      InterpreterT
+      LensOrphans
+      Parser.Common
+      Parser.Expression
+      Parser.Identifier
+      Parser.Literals
+      Parser.Pos
+      Parser.Statement
+      Types
+      Util
+  other-modules:
+      Paths_tcalc
+  hs-source-dirs:
+      src
+  default-extensions: NoImplicitPrelude OverloadedStrings ScopedTypeVariables FlexibleContexts PartialTypeSignatures
+  ghc-options: -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , basic-prelude
+    , megaparsec
+    , microlens
+    , microlens-mtl
+    , microlens-th
+    , mtl
+    , parser-combinators
+    , text
+    , transformers
+    , unordered-containers
+  default-language: Haskell2010
 
 executable tcalc
-  hs-source-dirs:      exe
-  main-is:             Main.hs
-  other-modules:       ArgParser
-  default-language:    Haskell2010
-  default-extensions:  NoImplicitPrelude,
-                       OverloadedStrings,
-                       ScopedTypeVariables
-  ghc-options:         -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints
-  build-depends:       base >= 4.7 && < 5,
-                       ansi-terminal,
-                       basic-prelude,
-                       haskeline,
-                       megaparsec,
-                       mtl,
-                       optparse-applicative,
-                       tcalc,
-                       text,
-                       transformers
+  main-is: Main.hs
+  other-modules:
+      ArgParser
+      Paths_tcalc
+  hs-source-dirs:
+      exe
+  default-extensions: NoImplicitPrelude OverloadedStrings ScopedTypeVariables
+  ghc-options: -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints
+  build-depends:
+      ansi-terminal
+    , base >=4.7 && <5
+    , basic-prelude
+    , haskeline
+    , megaparsec
+    , mtl
+    , optparse-applicative
+    , tcalc
+    , text
+    , transformers
+  default-language: Haskell2010
 
 test-suite tcalc_test
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  build-depends:       base,
-                       basic-prelude,
-                       megaparsec,
-                       tcalc,
-                       tasty,
-                       tasty-hunit
-  ghc-options:         -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints -rtsopts
-  default-language:    Haskell2010
-  default-extensions:  NoImplicitPrelude,
-                       OverloadedStrings,
-                       ScopedTypeVariables
-  main-is:             Spec.hs
-  other-modules:       LiteralsTests,
-                       StatementTests
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      LiteralsTests
+      StatementTests
+      Paths_tcalc
+  hs-source-dirs:
+      test
+  default-extensions: NoImplicitPrelude OverloadedStrings ScopedTypeVariables
+  ghc-options: -O2 -Wall -Wno-orphans -Widentities -Wredundant-constraints -rtsopts
+  build-depends:
+      base
+    , basic-prelude
+    , megaparsec
+    , tasty
+    , tasty-hunit
+    , tcalc
+  default-language: Haskell2010

@@ -1,0 +1,79 @@
+name:       tcalc
+version:    '0.1.0.0'
+synopsis:   CLI for performing time-based calculations.
+category:   Web
+author:     Reuben D'Netto
+maintainer: rdnetto@gmail.com
+copyright:  Copyright 2018
+license:    Apache
+homepage:   https://github.com/rdnetto/tcalc#readme
+
+default-extensions:
+- NoImplicitPrelude
+- OverloadedStrings
+- ScopedTypeVariables
+
+ghc-options:
+- -O2
+- -Wall
+- -Wno-orphans
+- -Widentities
+- -Wredundant-constraints
+
+dependencies:
+- basic-prelude
+- megaparsec
+
+library:
+  source-dirs: src
+  default-extensions:
+  - FlexibleContexts
+  - PartialTypeSignatures
+  exposed-modules:
+  - Interpreter
+  - InterpreterT
+  - LensOrphans
+  - Parser.Common
+  - Parser.Expression
+  - Parser.Identifier
+  - Parser.Literals
+  - Parser.Pos
+  - Parser.Statement
+  - Types
+  - Util
+  dependencies:
+  - base >=4.7 && <5
+  - microlens
+  - microlens-mtl
+  - microlens-th
+  - mtl
+  - parser-combinators
+  - text
+  - transformers
+  - unordered-containers
+
+executables:
+  tcalc:
+    main: Main.hs
+    source-dirs: exe
+    dependencies:
+    - base >=4.7 && <5
+    - ansi-terminal
+    - haskeline
+    - mtl
+    - optparse-applicative
+    - tcalc
+    - text
+    - transformers
+
+tests:
+  tcalc_test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -rtsopts
+    dependencies:
+    - base
+    - tcalc
+    - tasty
+    - tasty-hunit
